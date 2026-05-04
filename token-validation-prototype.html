@@ -1,0 +1,1548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Benefits Guide — Token Validation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons|Material+Icons+Outlined" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
+<style>
+  /* ====== Material Design 3 inspired tokens ====== */
+  :root {
+    --md-primary: #6750A4;
+    --md-on-primary: #FFFFFF;
+    --md-primary-container: #EADDFF;
+    --md-on-primary-container: #21005D;
+    --md-secondary: #625B71;
+    --md-secondary-container: #E8DEF8;
+    --md-tertiary: #7D5260;
+    --md-tertiary-container: #FFD8E4;
+    --md-error: #B3261E;
+    --md-error-container: #F9DEDC;
+    --md-on-error-container: #410E0B;
+    --md-warning: #B45309;
+    --md-warning-container: #FEF3C7;
+    --md-on-warning-container: #78350F;
+    --md-success: #2E7D32;
+    --md-success-container: #C8E6C9;
+
+    --md-surface: #FFFBFE;
+    --md-surface-1: #F7F2FA;
+    --md-surface-2: #F3EDF7;
+    --md-surface-3: #EEE8F4;
+    --md-surface-4: #ECE6F0;
+    --md-surface-variant: #E7E0EC;
+    --md-on-surface: #1C1B1F;
+    --md-on-surface-variant: #49454F;
+    --md-outline: #79747E;
+    --md-outline-variant: #CAC4D0;
+
+    --md-bg: #FEF7FF;
+
+    --shadow-1: 0 1px 2px rgba(0,0,0,0.08), 0 1px 3px 1px rgba(0,0,0,0.06);
+    --shadow-2: 0 1px 2px rgba(0,0,0,0.10), 0 2px 6px 2px rgba(0,0,0,0.08);
+    --shadow-3: 0 1px 3px rgba(0,0,0,0.12), 0 4px 8px 3px rgba(0,0,0,0.10);
+    --shadow-4: 0 2px 3px rgba(0,0,0,0.14), 0 6px 10px 4px rgba(0,0,0,0.10);
+  }
+
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+
+  /* ====== Material Icons rendering safeguards ====== */
+  .material-icons,
+  .material-symbols-outlined,
+  .material-symbols-outlined {
+    font-family: 'Material Symbols Outlined', 'Material Icons Outlined', 'Material Icons';
+    font-weight: normal;
+    font-style: normal;
+    font-size: 20px;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    display: inline-block;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    -webkit-font-feature-settings: 'liga';
+    -webkit-font-smoothing: antialiased;
+    font-feature-settings: 'liga';
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  }
+  body {
+    font-family: 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--md-bg);
+    color: var(--md-on-surface);
+    font-size: 14px;
+    line-height: 1.5;
+    overflow: hidden;
+  }
+
+  /* ====== Top App Bar ====== */
+  .app-bar {
+    height: 64px;
+    background: var(--md-surface);
+    border-bottom: 1px solid var(--md-outline-variant);
+    display: flex;
+    align-items: center;
+    padding: 0 24px;
+    gap: 16px;
+    position: relative;
+    z-index: 30;
+  }
+  .app-bar .logo {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: var(--md-primary-container);
+    color: var(--md-on-primary-container);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 500;
+    flex-shrink: 0;
+  }
+  .app-bar .titles {
+    display: flex; flex-direction: column;
+    line-height: 1.25;
+    min-width: 0;
+  }
+  .app-bar .company {
+    font-size: 11px;
+    color: var(--md-on-surface-variant);
+    letter-spacing: .4px;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .app-bar .doc-name {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--md-on-surface);
+    white-space: nowrap;
+  }
+  .app-bar .spacer { flex: 1; }
+  .icon-btn {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    color: var(--md-on-surface-variant);
+    cursor: pointer;
+    display: inline-flex; align-items: center; justify-content: center;
+    transition: background-color .2s;
+  }
+  .icon-btn:hover { background: rgba(103,80,164,0.08); }
+  .icon-btn .material-symbols-outlined { font-size: 22px; }
+
+  .btn {
+    height: 40px;
+    padding: 0 20px;
+    border-radius: 20px;
+    border: none;
+    font-weight: 500;
+    font-size: 14px;
+    cursor: pointer;
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: inherit;
+    transition: background-color .2s, box-shadow .2s;
+    letter-spacing: .1px;
+  }
+  .btn .material-symbols-outlined { font-size: 18px; }
+  .btn-filled {
+    background: var(--md-primary); color: var(--md-on-primary);
+  }
+  .btn-filled:hover { box-shadow: var(--shadow-1); background: #5A3F95; }
+  .btn-tonal {
+    background: var(--md-secondary-container); color: var(--md-on-surface);
+  }
+  .btn-tonal:hover { background: #DDD0EA; }
+  .btn-text {
+    background: transparent; color: var(--md-primary); padding: 0 12px;
+  }
+  .btn-text:hover { background: rgba(103,80,164,0.08); }
+  .btn-outlined {
+    background: transparent; color: var(--md-primary);
+    border: 1px solid var(--md-outline);
+  }
+  .btn-outlined:hover { background: rgba(103,80,164,0.06); }
+
+  .badge-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--md-error); display: inline-block;
+  }
+
+  /* ====== Google Docs-style Toolbar ====== */
+  .gdocs-toolbar {
+    height: 44px;
+    background: var(--md-surface-1);
+    border-bottom: 1px solid var(--md-outline-variant);
+    display: flex; align-items: center;
+    padding: 0 12px;
+    gap: 2px;
+    overflow-x: auto;
+    flex-shrink: 0;
+  }
+  .gdocs-toolbar::-webkit-scrollbar { height: 6px; }
+  .gdocs-toolbar .tool-btn {
+    height: 32px;
+    min-width: 32px;
+    padding: 0 6px;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    color: var(--md-on-surface);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    font-family: inherit;
+    font-size: 13px;
+    flex-shrink: 0;
+    transition: background-color .15s;
+  }
+  .gdocs-toolbar .tool-btn:hover { background: rgba(60,64,67,0.08); }
+  .gdocs-toolbar .tool-btn:active { background: rgba(60,64,67,0.16); }
+  .gdocs-toolbar .tool-btn.active { background: var(--md-primary-container); color: var(--md-on-primary-container); }
+  .gdocs-toolbar .tool-btn .material-symbols-outlined,
+  .gdocs-toolbar .tool-btn .material-symbols-outlined { font-size: 18px; }
+  .gdocs-toolbar .tool-btn .caret {
+    font-size: 18px;
+    color: var(--md-on-surface-variant);
+    margin-left: 0;
+  }
+  .gdocs-toolbar .tool-select {
+    height: 32px;
+    padding: 0 4px 0 10px;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    color: var(--md-on-surface);
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 14px;
+    display: inline-flex; align-items: center; gap: 2px;
+    flex-shrink: 0;
+    transition: background-color .15s;
+  }
+  .gdocs-toolbar .tool-select:hover { background: rgba(60,64,67,0.08); }
+  .gdocs-toolbar .tool-select.style-select { min-width: 110px; }
+  .gdocs-toolbar .tool-select.font-select { min-width: 90px; }
+  .gdocs-toolbar .tool-select.size-select { min-width: 56px; justify-content: space-between; }
+  .gdocs-toolbar .tool-select .label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .gdocs-toolbar .divider {
+    width: 1px; height: 22px;
+    background: var(--md-outline-variant);
+    margin: 0 4px;
+    flex-shrink: 0;
+  }
+  .gdocs-toolbar .size-stepper {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  .gdocs-toolbar .size-stepper .tool-btn { padding: 0 4px; min-width: 24px; }
+  .gdocs-toolbar .size-input {
+    width: 36px; height: 28px; text-align: center;
+    border: 1px solid var(--md-outline-variant); border-radius: 4px;
+    background: var(--md-surface); font-family: inherit; font-size: 13px;
+    color: var(--md-on-surface);
+    -moz-appearance: textfield;
+  }
+  .gdocs-toolbar .size-input::-webkit-outer-spin-button,
+  .gdocs-toolbar .size-input::-webkit-inner-spin-button {
+    -webkit-appearance: none; margin: 0;
+  }
+  .gdocs-toolbar .color-swatch {
+    width: 14px; height: 4px;
+    border-radius: 2px; display: block; margin-top: 2px;
+  }
+  .gdocs-toolbar .with-swatch {
+    flex-direction: column; gap: 0; padding: 4px 6px; height: 32px;
+  }
+
+  /* ====== Layout ====== */
+  .layout {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    height: calc(100% - 64px - 44px);
+    overflow: hidden;
+  }
+  .doc-area {
+    overflow-y: auto;
+    padding: 32px 48px 240px;
+    background: var(--md-bg);
+    height: 100%;
+  }
+  .panel {
+    background: var(--md-surface);
+    border-left: 1px solid var(--md-outline-variant);
+    display: flex; flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* ====== Document content ====== */
+  .doc-card {
+    background: var(--md-surface);
+    border-radius: 16px;
+    padding: 40px 48px;
+    box-shadow: var(--shadow-1);
+    max-width: 820px;
+    margin: 0 auto;
+  }
+  .doc-card h1 {
+    font-size: 28px; font-weight: 500; margin: 0 0 16px;
+    color: var(--md-on-surface);
+  }
+  .doc-card p {
+    font-size: 14px; line-height: 1.6; color: var(--md-on-surface-variant);
+    margin: 0 0 16px;
+  }
+  .hero-img {
+    width: 100%; height: 280px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #B39DDB 0%, #7E57C2 50%, #5E35B1 100%);
+    margin: 24px 0;
+    display: flex; align-items: center; justify-content: center;
+    color: rgba(255,255,255,.85); font-size: 14px;
+    position: relative; overflow: hidden;
+  }
+  .hero-img::after {
+    content: ''; position: absolute; inset: 0;
+    background:
+      radial-gradient(circle at 25% 30%, rgba(255,255,255,.18) 0, transparent 35%),
+      radial-gradient(circle at 75% 60%, rgba(255,255,255,.12) 0, transparent 40%);
+  }
+
+  /* ====== Benefits table ====== */
+  .table-wrap {
+    border-radius: 12px;
+    border: 1px solid var(--md-outline-variant);
+    overflow: hidden;
+    margin-top: 24px;
+  }
+  table.benefits {
+    width: 100%; border-collapse: collapse;
+  }
+  table.benefits th, table.benefits td {
+    text-align: left;
+    padding: 14px 20px;
+    font-size: 14px;
+    border-bottom: 1px solid var(--md-outline-variant);
+  }
+  table.benefits th {
+    background: var(--md-surface-2);
+    font-weight: 500;
+    color: var(--md-on-surface);
+    font-size: 13px;
+  }
+  table.benefits tr:last-child td { border-bottom: 0; }
+  table.benefits .col-label { color: var(--md-on-surface-variant); width: 40%; }
+
+  /* ====== Token chip in document ====== */
+  .token {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 10px;
+    border-radius: 8px;
+    background: var(--md-warning-container);
+    color: var(--md-on-warning-container);
+    font-family: 'Roboto Mono', monospace;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1.5px solid transparent;
+    transition: all .2s;
+    position: relative;
+  }
+  .token:hover { background: #FDE8B8; }
+  .token.updated {
+    background: var(--md-success-container);
+    color: #1B5E20;
+  }
+  .token.dismissed {
+    background: var(--md-surface-3);
+    color: var(--md-on-surface-variant);
+  }
+  .token.focused {
+    border-color: var(--md-primary);
+    box-shadow: 0 0 0 4px rgba(103,80,164,.15);
+  }
+  .token .material-symbols-outlined { font-size: 14px; }
+
+  /* ====== Side panel ====== */
+  .panel-header {
+    padding: 20px 20px 0;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .panel-header h2 {
+    font-size: 18px; font-weight: 500; margin: 0;
+  }
+  .tabs {
+    display: flex;
+    margin: 16px 16px 0;
+    border-bottom: 1px solid var(--md-outline-variant);
+    position: relative;
+  }
+  .tab {
+    flex: 1;
+    padding: 14px 0;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--md-on-surface-variant);
+    background: transparent; border: none; cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    font-family: inherit;
+    transition: color .2s, border-color .2s;
+  }
+  .tab.active {
+    color: var(--md-primary);
+    border-bottom-color: var(--md-primary);
+  }
+  .tab .badge-dot { background: var(--md-error); }
+
+  .panel-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+  }
+
+  /* ====== Search ====== */
+  .search {
+    height: 40px;
+    background: var(--md-surface-2);
+    border-radius: 20px;
+    display: flex; align-items: center;
+    padding: 0 14px;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .search input {
+    flex: 1; border: none; background: transparent; outline: none;
+    font-size: 14px; font-family: inherit; color: var(--md-on-surface);
+  }
+  .search .material-symbols-outlined {
+    color: var(--md-on-surface-variant); font-size: 20px;
+  }
+
+  /* ====== Breadcrumb ====== */
+  .breadcrumb {
+    display: flex; align-items: center; gap: 4px;
+    font-size: 14px; color: var(--md-on-surface-variant);
+    margin: 4px 0 12px;
+  }
+  .breadcrumb button {
+    background: transparent; border: none; cursor: pointer; color: var(--md-on-surface-variant);
+    width: 32px; height: 32px; border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+  .breadcrumb button:hover { background: var(--md-surface-2); }
+  .breadcrumb .crumb { padding: 4px 8px; border-radius: 8px; }
+  .breadcrumb .crumb.current { color: var(--md-on-surface); font-weight: 500; }
+
+  /* ====== Token cards in side panel ====== */
+  .token-card {
+    background: var(--md-surface);
+    border: 1px solid var(--md-outline-variant);
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: background-color .2s, border-color .2s, box-shadow .2s;
+  }
+  .token-card:hover {
+    background: var(--md-surface-2);
+    border-color: var(--md-outline);
+  }
+  .token-card.selected {
+    border-color: var(--md-primary);
+    box-shadow: 0 0 0 1px var(--md-primary);
+  }
+  .token-card .row1 {
+    display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  }
+  .token-card .label {
+    font-size: 14px; font-weight: 500; color: var(--md-on-surface);
+  }
+  .status-tag {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-weight: 500;
+    letter-spacing: .2px;
+    white-space: nowrap;
+  }
+  .status-tag.mismatch {
+    background: var(--md-warning-container); color: var(--md-on-warning-container);
+  }
+  .status-tag.missing {
+    background: var(--md-error-container); color: var(--md-on-error-container);
+  }
+  .status-tag.ok {
+    background: var(--md-success-container); color: #1B5E20;
+  }
+  .token-card .values {
+    margin-top: 6px;
+    font-size: 13px;
+    color: var(--md-on-surface-variant);
+  }
+  .token-card .old { text-decoration: line-through; margin-right: 6px; }
+  .token-card .new { color: var(--md-on-surface); font-weight: 500; }
+  .token-card .actions {
+    display: flex; gap: 8px; margin-top: 10px;
+  }
+  .token-card .actions .btn { height: 32px; padding: 0 14px; font-size: 13px; border-radius: 16px; }
+
+  .data-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    border: 1px solid transparent;
+  }
+  .data-row:hover { background: var(--md-surface-2); }
+  .data-row.selected { border-color: var(--md-primary); background: var(--md-surface-2); }
+  .data-row .name { color: var(--md-on-surface); }
+  .data-row .arrow { color: var(--md-on-surface-variant); }
+
+  /* ====== Catalog (All Tokens tab) ====== */
+  .catalog-hint {
+    background: var(--md-primary-container);
+    color: var(--md-on-primary-container);
+    border-radius: 12px;
+    padding: 10px 12px;
+    font-size: 12px;
+    line-height: 1.45;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .catalog-hint .material-symbols-outlined { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+  .catalog-hint b { font-weight: 500; }
+
+  .cat-section { margin-bottom: 4px; }
+  .cat-header {
+    width: 100%;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 8px 6px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-family: inherit;
+    text-align: left;
+    border-radius: 6px;
+  }
+  .cat-header:hover { background: var(--md-surface-2); }
+  .cat-header .left {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 13px; font-weight: 500; color: var(--md-on-surface);
+    text-transform: uppercase; letter-spacing: .4px;
+  }
+  .cat-header .count {
+    font-size: 12px; font-weight: 400;
+    color: var(--md-on-surface-variant);
+    background: var(--md-surface-3);
+    padding: 1px 8px; border-radius: 10px;
+    text-transform: none; letter-spacing: 0;
+  }
+  .cat-header .material-symbols-outlined {
+    font-size: 20px; color: var(--md-on-surface-variant);
+    transition: transform .2s;
+  }
+  .cat-section.collapsed .cat-header .material-symbols-outlined { transform: rotate(-90deg); }
+  .cat-section.collapsed .cat-items { display: none; }
+
+  .catalog-row {
+    display: flex; align-items: center;
+    padding: 10px 8px;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    gap: 8px;
+    transition: background-color .15s;
+  }
+  .catalog-row:hover { background: var(--md-surface-2); }
+  .catalog-row.in-doc { opacity: .85; }
+  .catalog-row .info { flex: 1; min-width: 0; }
+  .catalog-row .name {
+    font-size: 14px; color: var(--md-on-surface); font-weight: 400;
+    display: block;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .catalog-row .desc {
+    font-size: 12px; color: var(--md-on-surface-variant);
+    display: block;
+    margin-top: 1px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .catalog-row .insert-btn {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    border: none;
+    background: var(--md-primary);
+    color: var(--md-on-primary);
+    cursor: pointer;
+    display: inline-flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    transition: background-color .15s, box-shadow .15s;
+  }
+  .catalog-row .insert-btn:hover { background: #5A3F95; box-shadow: var(--shadow-1); }
+  .catalog-row .insert-btn .material-symbols-outlined { font-size: 18px; }
+  .catalog-row .in-doc-tag {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 11px; padding: 4px 8px;
+    border-radius: 6px;
+    background: var(--md-success-container); color: #1B5E20;
+    flex-shrink: 0;
+  }
+  .catalog-row .in-doc-tag .material-symbols-outlined { font-size: 14px; }
+
+  .insert-cursor {
+    display: inline-block;
+    width: 1.5px;
+    height: 1em;
+    background: var(--md-primary);
+    margin: 0 1px;
+    vertical-align: text-bottom;
+    animation: cursor-blink 1s steps(2) infinite;
+  }
+  @keyframes cursor-blink { to { opacity: 0; } }
+
+  /* ====== Edit popover (modal-anchored) ====== */
+  .popover-backdrop {
+    position: fixed; inset: 0;
+    background: transparent;
+    z-index: 50;
+    display: none;
+  }
+  .popover-backdrop.open { display: block; }
+
+  .popover {
+    position: absolute;
+    width: 380px;
+    background: var(--md-surface);
+    border-radius: 16px;
+    box-shadow: var(--shadow-4);
+    padding: 20px;
+    z-index: 60;
+    border: 1px solid var(--md-outline-variant);
+    animation: pop .18s ease-out;
+  }
+  @keyframes pop {
+    from { opacity: 0; transform: translateY(-4px) scale(.98); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .popover h3 {
+    margin: 0 0 4px;
+    font-size: 16px; font-weight: 500;
+  }
+  .popover .meta {
+    display: grid; grid-template-columns: 100px 1fr;
+    row-gap: 8px;
+    font-size: 13px;
+    color: var(--md-on-surface-variant);
+    margin: 12px 0;
+  }
+  .popover .meta .v { color: var(--md-on-surface); font-weight: 500; }
+
+  .text-field {
+    position: relative;
+    margin-top: 16px;
+  }
+  .text-field label {
+    position: absolute;
+    top: -8px; left: 12px;
+    background: var(--md-surface);
+    padding: 0 6px;
+    font-size: 12px;
+    color: var(--md-primary);
+    font-weight: 500;
+  }
+  .text-field input {
+    width: 100%;
+    height: 48px;
+    padding: 0 14px;
+    border: 1.5px solid var(--md-primary);
+    border-radius: 8px;
+    font-size: 14px;
+    color: var(--md-on-surface);
+    font-family: inherit;
+    outline: none;
+    background: var(--md-surface);
+  }
+  .text-field input:focus { border-color: var(--md-primary); border-width: 2px; }
+  .text-field .helper {
+    margin-top: 6px; padding: 0 14px;
+    font-size: 12px;
+    color: var(--md-on-surface-variant);
+    display: flex; align-items: center; gap: 6px;
+  }
+  .text-field .helper .material-symbols-outlined { font-size: 14px; color: var(--md-warning); }
+
+  .popover .actions {
+    margin-top: 16px;
+    display: flex; justify-content: flex-end; gap: 8px;
+  }
+
+  /* ====== Empty state ====== */
+  .empty-state {
+    text-align: center;
+    padding: 48px 24px;
+    color: var(--md-on-surface-variant);
+  }
+  .empty-state .material-symbols-outlined {
+    font-size: 48px; color: var(--md-success); margin-bottom: 12px;
+  }
+  .empty-state h3 { margin: 0 0 4px; font-size: 16px; color: var(--md-on-surface); font-weight: 500; }
+  .empty-state p { font-size: 13px; margin: 0; }
+
+  /* ====== Snackbar ====== */
+  .snackbar {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: #322F35;
+    color: #F4EFF4;
+    padding: 12px 16px;
+    border-radius: 8px;
+    box-shadow: var(--shadow-3);
+    display: flex; align-items: center; gap: 12px;
+    z-index: 80;
+    font-size: 14px;
+    transition: transform .3s ease, opacity .3s ease;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .snackbar.show {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .snackbar button {
+    background: transparent; color: #D0BCFF; border: none; cursor: pointer;
+    font-weight: 500; font-size: 14px; font-family: inherit;
+    padding: 4px 8px; border-radius: 4px;
+  }
+
+  /* ====== Side rail ====== */
+  .side-rail {
+    position: absolute;
+    left: 0; top: 50%;
+    transform: translateY(-50%);
+    background: var(--md-surface);
+    border: 1px solid var(--md-outline-variant);
+    border-left: none;
+    border-radius: 0 8px 8px 0;
+    padding: 4px;
+  }
+  .doc-area-wrap { position: relative; overflow: hidden; height: 100%; }
+
+  /* Dropdown chevron */
+  .chevron { font-size: 16px; }
+
+  /* Subtle scroll styling */
+  .panel-body::-webkit-scrollbar, .doc-area::-webkit-scrollbar { width: 8px; }
+  .panel-body::-webkit-scrollbar-thumb, .doc-area::-webkit-scrollbar-thumb {
+    background: var(--md-outline-variant); border-radius: 4px;
+  }
+</style>
+</head>
+<body>
+
+<!-- ====== Top App Bar ====== -->
+<header class="app-bar">
+  <div class="logo">AC</div>
+  <div class="titles">
+    <span class="company">Acme Corporation</span>
+    <span class="doc-name">2026 Benefits Guide</span>
+  </div>
+  <div class="spacer"></div>
+  <button class="btn btn-tonal" id="tokenValuesBtn">
+    <span class="badge-dot"></span> Token Values
+  </button>
+  <button class="btn btn-filled">
+    <span class="material-symbols-outlined">save</span> Save
+  </button>
+</header>
+
+<!-- ====== Google Docs-style editing toolbar ====== -->
+<div class="gdocs-toolbar" role="toolbar" aria-label="Text formatting">
+  <button class="tool-btn" title="Undo"><span class="material-symbols-outlined">undo</span></button>
+  <button class="tool-btn" title="Redo"><span class="material-symbols-outlined">redo</span></button>
+  <button class="tool-btn" title="Print"><span class="material-symbols-outlined">print</span></button>
+  <button class="tool-btn" title="Spelling check"><span class="material-symbols-outlined">spellcheck</span></button>
+  <button class="tool-btn" title="Paint format"><span class="material-symbols-outlined">format_paint</span></button>
+
+  <div class="divider"></div>
+
+  <button class="tool-select size-select" title="Zoom">
+    <span class="label">100%</span>
+    <span class="material-symbols-outlined caret">arrow_drop_down</span>
+  </button>
+
+  <div class="divider"></div>
+
+  <button class="tool-select style-select" title="Styles">
+    <span class="label">Normal text</span>
+    <span class="material-symbols-outlined caret">arrow_drop_down</span>
+  </button>
+
+  <div class="divider"></div>
+
+  <button class="tool-select font-select" title="Font">
+    <span class="label">Roboto</span>
+    <span class="material-symbols-outlined caret">arrow_drop_down</span>
+  </button>
+
+  <div class="divider"></div>
+
+  <div class="size-stepper">
+    <button class="tool-btn" title="Decrease font size"><span class="material-symbols-outlined">remove</span></button>
+    <input class="size-input" type="number" value="11" min="1" max="200" />
+    <button class="tool-btn" title="Increase font size"><span class="material-symbols-outlined">add</span></button>
+  </div>
+
+  <div class="divider"></div>
+
+  <button class="tool-btn" title="Bold (Ctrl+B)"><span class="material-symbols-outlined">format_bold</span></button>
+  <button class="tool-btn" title="Italic (Ctrl+I)"><span class="material-symbols-outlined">format_italic</span></button>
+  <button class="tool-btn" title="Underline (Ctrl+U)"><span class="material-symbols-outlined">format_underlined</span></button>
+  <button class="tool-btn with-swatch" title="Text color">
+    <span class="material-symbols-outlined">format_color_text</span>
+    <span class="color-swatch" style="background:#1A73E8"></span>
+  </button>
+  <button class="tool-btn with-swatch" title="Highlight color">
+    <span class="material-symbols-outlined">border_color</span>
+    <span class="color-swatch" style="background:#FFEB3B"></span>
+  </button>
+
+  <div class="divider"></div>
+
+  <button class="tool-btn" title="Insert link"><span class="material-symbols-outlined">link</span></button>
+  <button class="tool-btn" title="Add comment"><span class="material-symbols-outlined">add_comment</span></button>
+  <button class="tool-btn" title="Insert image"><span class="material-symbols-outlined">image</span></button>
+
+  <div class="divider"></div>
+
+  <button class="tool-btn" title="Align left"><span class="material-symbols-outlined">format_align_left</span></button>
+  <button class="tool-btn" title="Align center"><span class="material-symbols-outlined">format_align_center</span></button>
+  <button class="tool-btn" title="Align right"><span class="material-symbols-outlined">format_align_right</span></button>
+  <button class="tool-btn" title="Justify"><span class="material-symbols-outlined">format_align_justify</span></button>
+
+  <div class="divider"></div>
+
+  <button class="tool-btn" title="Line spacing"><span class="material-symbols-outlined">format_line_spacing</span></button>
+  <button class="tool-btn" title="Checklist"><span class="material-symbols-outlined">checklist</span></button>
+  <button class="tool-btn" title="Bulleted list"><span class="material-symbols-outlined">format_list_bulleted</span></button>
+  <button class="tool-btn" title="Numbered list"><span class="material-symbols-outlined">format_list_numbered</span></button>
+  <button class="tool-btn" title="Decrease indent"><span class="material-symbols-outlined">format_indent_decrease</span></button>
+  <button class="tool-btn" title="Increase indent"><span class="material-symbols-outlined">format_indent_increase</span></button>
+
+  <div class="divider"></div>
+
+  <button class="tool-btn" title="Clear formatting"><span class="material-symbols-outlined">format_clear</span></button>
+  <button class="tool-btn" title="Insert token"><span class="material-symbols-outlined">data_object</span></button>
+</div>
+
+<!-- ====== Layout ====== -->
+<div class="layout">
+  <div class="doc-area-wrap">
+    <main class="doc-area" id="docArea">
+      <article class="doc-card">
+        <h1>Welcome to your benefits</h1>
+        <p>
+          Acme Corporation appreciates your commitment to our success. We're equally committed to providing you and your family with competitive, affordable benefits so you can achieve your potential in all areas of life.
+        </p>
+        <p>
+          Please read this Document carefully. It includes a summary of your medical insurance benefits and tips for getting the most out of your plan. Although this document contains a simplified overview of benefits, for complete information about all benefits available to you, please see the carrier's summary plan description (SPD).
+        </p>
+        <div class="hero-img"></div>
+
+        <h2 style="font-size:20px; font-weight:500; margin: 24px 0 8px;">Medical Plan — In-Network Benefits</h2>
+        <p>Your Blue Shield Silver PPO 2026 plan covers preventive care at no cost and shares costs after you meet your deductible.</p>
+
+        <div class="table-wrap">
+          <table class="benefits">
+            <thead>
+              <tr><th>Benefit</th><th>Coverage Tier</th><th>Plan Year Amount</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="col-label">Annual Deductible</td>
+                <td>Individual</td>
+                <td><span class="token" data-token-id="t1">$1,500</span></td>
+              </tr>
+              <tr>
+                <td class="col-label">Annual Deductible</td>
+                <td>Family</td>
+                <td><span class="token" data-token-id="t2">$3,000</span></td>
+              </tr>
+              <tr>
+                <td class="col-label">Out-of-Pocket Maximum</td>
+                <td>Individual</td>
+                <td><span class="token" data-token-id="t3">$4,500</span></td>
+              </tr>
+              <tr>
+                <td class="col-label">Out-of-Pocket Maximum</td>
+                <td>Family</td>
+                <td><span class="token" data-token-id="t4">$9,000</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2 style="font-size:20px; font-weight:500; margin: 32px 0 8px;">Copays & Coinsurance</h2>
+        <p>
+          Once you meet your deductible, you'll pay a copay of <span class="token" data-token-id="t5">$25</span> for each primary care visit, and <span class="token" data-token-id="t6">$50</span> for visits with a specialist. After that, the plan pays <span class="token" data-token-id="t7">80%</span> of covered services and you pay the remaining 20% until you reach your out-of-pocket maximum.
+        </p>
+
+        <h2 style="font-size:20px; font-weight:500; margin: 32px 0 8px;">Premiums</h2>
+        <p>
+          For the 2026 plan year, your monthly premium contribution for individual coverage is <span class="token" data-token-id="t8">$250</span>. Family coverage premiums vary by tier — see the enrollment portal for personalized rates.
+        </p>
+
+        <h2 style="font-size:20px; font-weight:500; margin: 32px 0 8px;">Prescription Drug Coverage</h2>
+        <p>
+          Generic medications have a copay of <span class="token" data-token-id="t9">$10</span>, brand-name drugs are <span class="token" data-token-id="t10">$40</span>, and specialty medications are subject to <span class="token" data-token-id="t11">25%</span> coinsurance after deductible.
+        </p>
+
+        <p style="margin-top: 32px; font-size: 12px; color: var(--md-on-surface-variant); padding-top: 16px; border-top: 1px solid var(--md-outline-variant);">
+          This is a fictional benefits document used for prototype purposes. Values shown are sample data only.
+        </p>
+      </article>
+    </main>
+  </div>
+
+  <!-- ====== Side Panel ====== -->
+  <aside class="panel">
+    <div class="panel-header">
+      <h2>Tokens Library</h2>
+      <button class="icon-btn"><span class="material-symbols-outlined">close</span></button>
+    </div>
+    <div class="tabs">
+      <button class="tab" data-tab="all">All Tokens</button>
+      <button class="tab active" data-tab="review">
+        <span class="badge-dot"></span> Tokens Review
+      </button>
+    </div>
+    <div class="panel-body" id="panelBody">
+      <!-- Rendered dynamically -->
+    </div>
+  </aside>
+</div>
+
+<!-- ====== Edit Popover (anchored) ====== -->
+<div class="popover-backdrop" id="popoverBackdrop">
+  <div class="popover" id="popover" role="dialog" aria-modal="true">
+    <h3 id="popTitle">Edit token value</h3>
+    <div class="meta">
+      <span>Category</span><span class="v" id="popCategory">Medical</span>
+      <span>Token label</span><span class="v" id="popLabel">Deductible — Individual</span>
+    </div>
+    <div class="text-field">
+      <label for="popValue">Value</label>
+      <input id="popValue" type="text" />
+      <div class="helper" id="popHelper">
+        <span class="material-symbols-outlined">info</span>
+        <span>New value found. Dismiss or update it.</span>
+      </div>
+    </div>
+    <div class="actions">
+      <button class="btn btn-text" id="popDismiss">Dismiss</button>
+      <button class="btn btn-filled" id="popUpdate">Update</button>
+    </div>
+  </div>
+</div>
+
+<div class="snackbar" id="snackbar">
+  <span id="snackMsg">Token updated</span>
+  <button id="snackUndo">Undo</button>
+</div>
+
+<script>
+  // ====== Token data (fictional medical insurance values) ======
+  const tokens = [
+    { id: 't1',  category: 'Medical', label: 'Deductible — Individual',          oldValue: '$1,500', newValue: '$1,750', status: 'mismatch' },
+    { id: 't2',  category: 'Medical', label: 'Deductible — Family',              oldValue: '$3,000', newValue: '$3,500', status: 'mismatch' },
+    { id: 't3',  category: 'Medical', label: 'Out-of-Pocket Max — Individual',   oldValue: '$4,500', newValue: '$5,000', status: 'mismatch' },
+    { id: 't4',  category: 'Medical', label: 'Out-of-Pocket Max — Family',       oldValue: '$9,000', newValue: '—',      status: 'missing' },
+    { id: 't5',  category: 'Medical', label: 'Primary Care Copay',               oldValue: '$25',    newValue: '$30',    status: 'mismatch' },
+    { id: 't6',  category: 'Medical', label: 'Specialist Copay',                 oldValue: '$50',    newValue: '$60',    status: 'mismatch' },
+    { id: 't7',  category: 'Medical', label: 'Coinsurance',                      oldValue: '80%',    newValue: '85%',    status: 'mismatch' },
+    { id: 't8',  category: 'Medical', label: 'Monthly Premium — Individual',     oldValue: '$250',   newValue: '—',      status: 'missing' },
+    { id: 't9',  category: 'Pharmacy',label: 'Generic Drug Copay',               oldValue: '$10',    newValue: '$15',    status: 'mismatch' },
+    { id: 't10', category: 'Pharmacy',label: 'Brand-Name Drug Copay',            oldValue: '$40',    newValue: '$45',    status: 'mismatch' },
+    { id: 't11', category: 'Pharmacy',label: 'Specialty Drug Coinsurance',       oldValue: '25%',    newValue: '30%',    status: 'mismatch' },
+  ];
+
+  // Track which tokens have been resolved (updated/dismissed).
+  // 'pending' | 'updated' | 'dismissed'
+  const state = {};
+  tokens.forEach(t => state[t.id] = 'pending');
+
+  // ====== Token catalog (All Tokens tab) ======
+  // Available tokens grouped by category. Tokens already in the document
+  // are matched to the `tokens` array above via `inDocId`.
+  let tokenSeq = 100;
+  const catalog = [
+    { category: 'Medical', items: [
+      { name: 'Deductible — Individual',           sample: '$1,500',   inDocId: 't1' },
+      { name: 'Deductible — Family',               sample: '$3,000',   inDocId: 't2' },
+      { name: 'Out-of-Pocket Max — Individual',    sample: '$4,500',   inDocId: 't3' },
+      { name: 'Out-of-Pocket Max — Family',        sample: '$9,000',   inDocId: 't4' },
+      { name: 'Primary Care Copay',                sample: '$25',      inDocId: 't5' },
+      { name: 'Specialist Copay',                  sample: '$50',      inDocId: 't6' },
+      { name: 'Coinsurance',                       sample: '80%',      inDocId: 't7' },
+      { name: 'Monthly Premium — Individual',      sample: '$250',     inDocId: 't8' },
+      { name: 'Monthly Premium — Family',          sample: '$720',     inDocId: null },
+      { name: 'Emergency Room Copay',              sample: '$300',     inDocId: null },
+      { name: 'Urgent Care Copay',                 sample: '$75',      inDocId: null },
+      { name: 'Inpatient Hospital Coinsurance',    sample: '20%',      inDocId: null },
+      { name: 'Outpatient Surgery Coinsurance',    sample: '20%',      inDocId: null },
+    ]},
+    { category: 'Pharmacy', items: [
+      { name: 'Generic Drug Copay',                sample: '$10',      inDocId: 't9' },
+      { name: 'Brand-Name Drug Copay',             sample: '$40',      inDocId: 't10' },
+      { name: 'Specialty Drug Coinsurance',        sample: '25%',      inDocId: 't11' },
+      { name: 'Mail Order Generic',                sample: '$20',      inDocId: null },
+      { name: 'Mail Order Brand',                  sample: '$80',      inDocId: null },
+      { name: 'Pharmacy Deductible',               sample: '$200',     inDocId: null },
+    ]},
+    { category: 'Dental', items: [
+      { name: 'Annual Maximum',                    sample: '$1,500',   inDocId: null },
+      { name: 'Preventive Coverage',               sample: '100%',     inDocId: null },
+      { name: 'Basic Services Coinsurance',        sample: '80%',      inDocId: null },
+      { name: 'Major Services Coinsurance',        sample: '50%',      inDocId: null },
+      { name: 'Orthodontia Lifetime Max',          sample: '$2,000',   inDocId: null },
+    ]},
+    { category: 'Vision', items: [
+      { name: 'Eye Exam Copay',                    sample: '$10',      inDocId: null },
+      { name: 'Frames Allowance',                  sample: '$150',     inDocId: null },
+      { name: 'Contact Lens Allowance',            sample: '$130',     inDocId: null },
+      { name: 'Lens Copay',                        sample: '$25',      inDocId: null },
+    ]},
+    { category: 'Life & Disability', items: [
+      { name: 'Basic Life Coverage',               sample: '2× salary', inDocId: null },
+      { name: 'Short-Term Disability Benefit',     sample: '60% wages', inDocId: null },
+      { name: 'Long-Term Disability Benefit',      sample: '50% wages', inDocId: null },
+      { name: 'AD&D Coverage',                     sample: '$50,000',   inDocId: null },
+    ]},
+  ];
+
+  // Track collapsed/expanded state for categories
+  const collapsedCats = new Set();
+
+  // ====== Render side panel ======
+  const panelBody = document.getElementById('panelBody');
+  let currentTab = 'review';
+  let selectedTokenId = null;
+
+  function renderPanel() {
+    const search = (panelBody.querySelector('#searchInput')?.value || '').toLowerCase();
+    panelBody.innerHTML = '';
+
+    // search (always at top)
+    const searchEl = document.createElement('div');
+    searchEl.className = 'search';
+    const placeholder = currentTab === 'all' ? 'Search tokens to insert' : 'Search for tokens';
+    searchEl.innerHTML = `
+      <span class="material-symbols-outlined">search</span>
+      <input id="searchInput" placeholder="${placeholder}" value="${search}" />
+    `;
+    panelBody.appendChild(searchEl);
+    searchEl.querySelector('input').addEventListener('input', renderPanel);
+
+    // ====== ALL TOKENS = catalog ======
+    if (currentTab === 'all') {
+      // hint card explaining how to use
+      const hint = document.createElement('div');
+      hint.className = 'catalog-hint';
+      hint.innerHTML = `
+        <span class="material-symbols-outlined">lightbulb</span>
+        <span><b>Insert tokens into your document.</b> Click in the document to set the cursor, then press <span class="material-symbols-outlined" style="font-size:14px;vertical-align:-2px;">add</span> next to a token.</span>
+      `;
+      panelBody.appendChild(hint);
+
+      catalog.forEach(group => {
+        const items = group.items.filter(it =>
+          !search ||
+          it.name.toLowerCase().includes(search) ||
+          group.category.toLowerCase().includes(search)
+        );
+        if (items.length === 0) return;
+
+        const section = document.createElement('div');
+        section.className = 'cat-section';
+        if (collapsedCats.has(group.category)) section.classList.add('collapsed');
+
+        const header = document.createElement('button');
+        header.className = 'cat-header';
+        header.innerHTML = `
+          <span class="left">${group.category}<span class="count">${items.length}</span></span>
+          <span class="material-symbols-outlined">expand_more</span>
+        `;
+        header.addEventListener('click', () => {
+          if (collapsedCats.has(group.category)) collapsedCats.delete(group.category);
+          else collapsedCats.add(group.category);
+          renderPanel();
+        });
+        section.appendChild(header);
+
+        const itemsWrap = document.createElement('div');
+        itemsWrap.className = 'cat-items';
+
+        items.forEach(it => {
+          const inDoc = it.inDocId !== null;
+          const row = document.createElement('div');
+          row.className = 'catalog-row' + (inDoc ? ' in-doc' : '');
+          row.innerHTML = `
+            <div class="info">
+              <span class="name">${it.name}</span>
+              <span class="desc">Sample value: ${it.sample}</span>
+            </div>
+            ${inDoc
+              ? `<span class="in-doc-tag" title="Already used in document"><span class="material-symbols-outlined">check</span>In doc</span>`
+              : `<button class="insert-btn" title="Insert token at cursor"><span class="material-symbols-outlined">add</span></button>`
+            }
+          `;
+          if (inDoc) {
+            row.style.cursor = 'pointer';
+            row.title = 'Click to find this token in the document';
+            row.addEventListener('click', () => focusToken(it.inDocId));
+          } else {
+            const btn = row.querySelector('.insert-btn');
+            btn.addEventListener('click', (e) => {
+              e.stopPropagation();
+              insertCatalogToken(group.category, it);
+            });
+          }
+          itemsWrap.appendChild(row);
+        });
+
+        section.appendChild(itemsWrap);
+        panelBody.appendChild(section);
+      });
+      return;
+    }
+
+    // ====== REVIEW TAB ======
+    // breadcrumb
+    const bc = document.createElement('div');
+    bc.className = 'breadcrumb';
+    bc.innerHTML = `
+      <button title="Back"><span class="material-symbols-outlined">chevron_left</span></button>
+      <span class="crumb current">All Categories</span>
+    `;
+    panelBody.insertBefore(bc, panelBody.firstChild);
+
+    let visibleTokens = tokens.filter(t =>
+      (t.label.toLowerCase().includes(search) || t.category.toLowerCase().includes(search))
+    );
+    visibleTokens = visibleTokens.filter(t => state[t.id] === 'pending');
+
+    if (visibleTokens.length === 0) {
+      const empty = document.createElement('div');
+      empty.className = 'empty-state';
+      empty.innerHTML = `
+        <span class="material-symbols-outlined">check_circle</span>
+        <h3>All tokens reviewed</h3>
+        <p>No tokens need your attention right now.</p>
+      `;
+      panelBody.appendChild(empty);
+      return;
+    }
+
+    // review tab — render token cards
+    visibleTokens.forEach(t => {
+      const card = document.createElement('div');
+      card.className = 'token-card';
+      if (selectedTokenId === t.id) card.classList.add('selected');
+      card.dataset.tokenId = t.id;
+
+      const status = t.status === 'mismatch'
+        ? '<span class="status-tag mismatch">Data Mismatch</span>'
+        : '<span class="status-tag missing">Missing Data</span>';
+
+      const valueRow = t.status === 'missing'
+        ? `<div class="values">Not found in source data</div>`
+        : `<div class="values"><span class="old">${t.oldValue}</span><span class="new">${t.newValue}</span></div>`;
+
+      const actions = (selectedTokenId === t.id)
+        ? `<div class="actions">
+             <button class="btn btn-tonal" data-action="dismiss">Dismiss</button>
+             <button class="btn btn-filled" data-action="update">Update</button>
+           </div>`
+        : '';
+
+      card.innerHTML = `
+        <div class="row1">
+          <span class="label">${t.label}</span>
+          ${status}
+        </div>
+        ${valueRow}
+        ${actions}
+      `;
+      card.addEventListener('click', (e) => {
+        if (e.target.closest('button[data-action]')) return;
+        focusToken(t.id);
+      });
+      const dismissBtn = card.querySelector('button[data-action="dismiss"]');
+      const updateBtn = card.querySelector('button[data-action="update"]');
+      if (dismissBtn) dismissBtn.addEventListener('click', (e) => { e.stopPropagation(); dismissToken(t.id); });
+      if (updateBtn) updateBtn.addEventListener('click', (e) => { e.stopPropagation(); openPopoverForToken(t.id); });
+      panelBody.appendChild(card);
+    });
+  }
+
+  // ====== Tabs ======
+  document.querySelectorAll('.tab').forEach(t => {
+    t.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+      t.classList.add('active');
+      currentTab = t.dataset.tab;
+      renderPanel();
+    });
+  });
+
+  // ====== Insertion cursor (for adding tokens from catalog) ======
+  let cursorMarker = null;
+
+  function placeCursorAt(node, offset) {
+    removeCursor();
+    cursorMarker = document.createElement('span');
+    cursorMarker.className = 'insert-cursor';
+    cursorMarker.contentEditable = 'false';
+
+    if (node.nodeType === Node.TEXT_NODE) {
+      const before = node.textContent.slice(0, offset);
+      const after = node.textContent.slice(offset);
+      const beforeNode = document.createTextNode(before);
+      const afterNode = document.createTextNode(after);
+      const parent = node.parentNode;
+      parent.insertBefore(beforeNode, node);
+      parent.insertBefore(cursorMarker, node);
+      parent.insertBefore(afterNode, node);
+      parent.removeChild(node);
+    } else {
+      node.appendChild(cursorMarker);
+    }
+  }
+
+  function removeCursor() {
+    if (cursorMarker && cursorMarker.parentNode) {
+      cursorMarker.parentNode.removeChild(cursorMarker);
+    }
+    cursorMarker = null;
+  }
+
+  // Capture clicks in the doc-card (paragraphs/headings only) to set cursor
+  const docCard = document.querySelector('.doc-card');
+  docCard.addEventListener('click', (e) => {
+    // Don't set cursor when clicking a token chip or table
+    if (e.target.closest('.token')) return;
+    if (e.target.closest('.table-wrap')) return;
+    if (e.target.closest('.hero-img')) return;
+
+    // Only allow text-paragraph elements
+    const target = e.target.closest('p, h1, h2');
+    if (!target) return;
+
+    // Use caretPositionFromPoint / caretRangeFromPoint
+    let range;
+    if (document.caretPositionFromPoint) {
+      const pos = document.caretPositionFromPoint(e.clientX, e.clientY);
+      if (pos && target.contains(pos.offsetNode)) {
+        placeCursorAt(pos.offsetNode, pos.offset);
+      }
+    } else if (document.caretRangeFromPoint) {
+      range = document.caretRangeFromPoint(e.clientX, e.clientY);
+      if (range && target.contains(range.startContainer)) {
+        placeCursorAt(range.startContainer, range.startOffset);
+      }
+    } else {
+      // fallback: append at end
+      placeCursorAt(target, target.childNodes.length);
+    }
+  });
+
+  // ====== Insert a catalog token into the document ======
+  function insertCatalogToken(category, item) {
+    // Generate unique id and add to tokens model as pending review
+    const newId = 'tnew' + (tokenSeq++);
+    tokens.push({
+      id: newId,
+      category,
+      label: item.name,
+      oldValue: item.sample,
+      newValue: item.sample,
+      status: 'missing'  // newly inserted: needs to be filled in / confirmed
+    });
+    state[newId] = 'pending';
+    item.inDocId = newId;
+
+    // Build the new token element
+    const span = document.createElement('span');
+    span.className = 'token';
+    span.dataset.tokenId = newId;
+    span.textContent = item.sample;
+    span.addEventListener('click', (e) => {
+      e.stopPropagation();
+      focusToken(newId);
+    });
+
+    // Insert at cursor, or append to last paragraph if no cursor
+    if (cursorMarker && cursorMarker.parentNode) {
+      const parent = cursorMarker.parentNode;
+      // add a leading space if needed
+      const prev = cursorMarker.previousSibling;
+      if (prev && prev.nodeType === Node.TEXT_NODE && !/\s$/.test(prev.textContent)) {
+        parent.insertBefore(document.createTextNode(' '), cursorMarker);
+      }
+      parent.insertBefore(span, cursorMarker);
+      // add a trailing space if next is text without leading space
+      const next = cursorMarker.nextSibling;
+      if (!next || (next.nodeType === Node.TEXT_NODE && !/^\s/.test(next.textContent))) {
+        parent.insertBefore(document.createTextNode(' '), cursorMarker);
+      }
+      removeCursor();
+    } else {
+      const lastP = docCard.querySelector('p:last-of-type') || docCard;
+      lastP.appendChild(document.createTextNode(' '));
+      lastP.appendChild(span);
+    }
+
+    // Highlight + scroll to the new token
+    setTimeout(() => focusToken(newId), 80);
+    showSnack(`Inserted "${item.name}"`, () => removeInsertedToken(newId, item));
+    refreshReviewBadge();
+    renderPanel();
+  }
+
+  function removeInsertedToken(id, item) {
+    const el = document.querySelector(`.token[data-token-id="${id}"]`);
+    if (el && el.parentNode) el.parentNode.removeChild(el);
+    const idx = tokens.findIndex(t => t.id === id);
+    if (idx >= 0) tokens.splice(idx, 1);
+    delete state[id];
+    item.inDocId = null;
+    renderPanel();
+    refreshReviewBadge();
+  }
+
+  // ====== Focus + scroll to a token in the document ======
+  let isProgrammaticScroll = false;
+  let scrollSettleTimer = null;
+
+  function focusToken(id) {
+    selectedTokenId = id;
+    renderPanel();
+
+    const el = document.querySelector(`.token[data-token-id="${id}"]`);
+    if (!el) return;
+
+    // remove existing focus highlights
+    document.querySelectorAll('.token.focused').forEach(n => n.classList.remove('focused'));
+    el.classList.add('focused');
+
+    // close any open popover before scrolling
+    closePopover();
+
+    // mark scroll as programmatic so the scroll handler doesn't close the popover
+    isProgrammaticScroll = true;
+
+    // compute target scrollTop manually so we have full control
+    const docArea = document.getElementById('docArea');
+    const elRect = el.getBoundingClientRect();
+    const areaRect = docArea.getBoundingClientRect();
+    const offset = elRect.top - areaRect.top - (areaRect.height / 2) + (elRect.height / 2);
+    docArea.scrollTo({ top: docArea.scrollTop + offset, behavior: 'smooth' });
+
+    // open popover after scroll settles
+    clearTimeout(scrollSettleTimer);
+    scrollSettleTimer = setTimeout(() => {
+      openPopoverForToken(id);
+      // re-enable user-scroll closing slightly after popover opens
+      setTimeout(() => { isProgrammaticScroll = false; }, 100);
+    }, 450);
+  }
+
+  // ====== Popover ======
+  const popoverBackdrop = document.getElementById('popoverBackdrop');
+  const popover = document.getElementById('popover');
+  const popValue = document.getElementById('popValue');
+  const popCategory = document.getElementById('popCategory');
+  const popLabel = document.getElementById('popLabel');
+  const popHelper = document.getElementById('popHelper');
+  const popDismiss = document.getElementById('popDismiss');
+  const popUpdate = document.getElementById('popUpdate');
+  let popoverTokenId = null;
+
+  function openPopoverForToken(id) {
+    const t = tokens.find(x => x.id === id);
+    if (!t) return;
+    popoverTokenId = id;
+
+    popCategory.textContent = t.category;
+    popLabel.textContent = t.label;
+
+    // pre-fill with the proposed new value when present;
+    // otherwise the current document value
+    const docEl = document.querySelector(`.token[data-token-id="${id}"]`);
+    const currentDocValue = docEl ? docEl.textContent : '';
+    if (state[id] === 'pending') {
+      popValue.value = (t.status === 'missing' ? currentDocValue : t.newValue);
+    } else {
+      popValue.value = currentDocValue;
+    }
+
+    if (t.status === 'missing' && state[id] === 'pending') {
+      popHelper.querySelector('span:last-child').textContent = 'No new value found. Update manually or dismiss.';
+    } else if (state[id] === 'pending') {
+      popHelper.querySelector('span:last-child').textContent = 'New value found. Dismiss or update it.';
+    } else {
+      popHelper.querySelector('span:last-child').textContent = 'Edit the current value.';
+    }
+
+    // position popover next to the token
+    const r = docEl.getBoundingClientRect();
+    const popW = 380;
+    let left = r.left + r.width/2 - popW/2;
+    if (left + popW > window.innerWidth - 400) left = window.innerWidth - 400 - popW - 16;
+    if (left < 16) left = 16;
+    let top = r.bottom + 8;
+    // if there isn't enough space below, render above
+    if (top + 300 > window.innerHeight) top = r.top - 300;
+    popover.style.left = left + 'px';
+    popover.style.top = top + 'px';
+
+    popoverBackdrop.classList.add('open');
+    setTimeout(() => popValue.focus(), 60);
+  }
+
+  function closePopover() {
+    popoverBackdrop.classList.remove('open');
+    popoverTokenId = null;
+  }
+
+  popoverBackdrop.addEventListener('click', (e) => {
+    if (e.target === popoverBackdrop) closePopover();
+  });
+
+  popDismiss.addEventListener('click', () => {
+    if (popoverTokenId) dismissToken(popoverTokenId);
+    closePopover();
+  });
+
+  popUpdate.addEventListener('click', () => {
+    if (!popoverTokenId) return;
+    updateTokenValue(popoverTokenId, popValue.value);
+    closePopover();
+  });
+
+  // ====== Token operations ======
+  function updateTokenValue(id, value) {
+    state[id] = 'updated';
+    const el = document.querySelector(`.token[data-token-id="${id}"]`);
+    if (el) {
+      el.textContent = value;
+      el.classList.remove('focused');
+      el.classList.remove('dismissed');
+      el.classList.add('updated');
+    }
+    showSnack(`Updated "${tokens.find(t => t.id===id).label}"`, () => undoChange(id));
+    renderPanel();
+    refreshReviewBadge();
+  }
+
+  function dismissToken(id) {
+    state[id] = 'dismissed';
+    const el = document.querySelector(`.token[data-token-id="${id}"]`);
+    if (el) {
+      el.classList.remove('focused');
+      el.classList.remove('updated');
+      el.classList.add('dismissed');
+    }
+    showSnack(`Dismissed "${tokens.find(t => t.id===id).label}"`, () => undoChange(id));
+    renderPanel();
+    refreshReviewBadge();
+  }
+
+  function undoChange(id) {
+    state[id] = 'pending';
+    const t = tokens.find(x => x.id === id);
+    const el = document.querySelector(`.token[data-token-id="${id}"]`);
+    if (el) {
+      // reset
+      el.textContent = t.oldValue === '—' ? '$0' : t.oldValue;
+      el.classList.remove('updated');
+      el.classList.remove('dismissed');
+    }
+    renderPanel();
+    refreshReviewBadge();
+  }
+
+  function refreshReviewBadge() {
+    const pending = tokens.filter(t => state[t.id] === 'pending').length;
+    const tab = document.querySelector('.tab[data-tab="review"]');
+    const dot = tab.querySelector('.badge-dot');
+    if (pending === 0 && dot) {
+      dot.style.background = 'var(--md-success)';
+    } else if (dot) {
+      dot.style.background = 'var(--md-error)';
+    }
+    // also update the top button dot
+    const headerBtnDot = document.querySelector('#tokenValuesBtn .badge-dot');
+    if (headerBtnDot) {
+      headerBtnDot.style.background = pending === 0 ? 'var(--md-success)' : 'var(--md-error)';
+    }
+  }
+
+  // ====== Document token clicks ======
+  document.querySelectorAll('.token').forEach(el => {
+    el.addEventListener('click', (e) => {
+      e.stopPropagation();
+      focusToken(el.dataset.tokenId);
+    });
+  });
+
+  // close popover on Esc
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closePopover();
+  });
+
+  // close popover on user-initiated doc-area scroll (popover is anchored)
+  document.getElementById('docArea').addEventListener('scroll', () => {
+    if (!isProgrammaticScroll) closePopover();
+  });
+
+  // ====== Snackbar ======
+  const snackbar = document.getElementById('snackbar');
+  const snackMsg = document.getElementById('snackMsg');
+  const snackUndo = document.getElementById('snackUndo');
+  let snackTimer = null;
+  let snackUndoFn = null;
+
+  function showSnack(msg, undoFn) {
+    snackMsg.textContent = msg;
+    snackUndoFn = undoFn || null;
+    snackUndo.style.display = undoFn ? 'inline-block' : 'none';
+    snackbar.classList.add('show');
+    clearTimeout(snackTimer);
+    snackTimer = setTimeout(() => snackbar.classList.remove('show'), 4000);
+  }
+  snackUndo.addEventListener('click', () => {
+    if (snackUndoFn) snackUndoFn();
+    snackbar.classList.remove('show');
+  });
+
+  // initial render
+  renderPanel();
+  refreshReviewBadge();
+</script>
+</body>
+</html>
